@@ -101,7 +101,6 @@ func main() {
 	limiter = rate.NewLimiter(rate.Limit(rl), bl)
 
 	// Add a handler for the command endpoint
-	//http.HandleFunc("/v1/rb", commandHandler)
 	initAPIv1()
 
 	// Start the server
@@ -186,41 +185,6 @@ func executeCommand(cmd Command) error {
 	}
 }
 
-// MouseMove moves the mouse to the specified coordinates simulating a human-like movement.
-func MouseMove(x, y int) error {
-	// Understand where the mouse is currently (compared to the target coordinates)
-	currentX, currentY := robotgo.Location()
-	// Calculate the distance between the current position and the target coordinates
-	//distance := math.Sqrt(math.Pow(float64(x-currentX), 2) + math.Pow(float64(y-currentY), 2))
-
-	// Randomize the speed and end velocity of the mouse movement
-	s := getRandFloat(0, 1) + 0.2 // speed
-	v := getRandFloat(0, 1) + 0.2 // end velocity
-	fmt.Printf("Moving mouse to %d, %d with speed %f and end velocity %f\n", x, y, s, v)
-
-	// Calculate the right coordinates to stop the mouse at around 3 quarters of the way
-	var x1, y1 int
-	if currentX != x && currentY != y {
-		x1 = x - int(float64(x-currentX)*0.25)
-		y1 = y - int(float64(y-currentY)*0.25)
-		// Calculate the time to move the mouse
-		//moveTime = time.Duration(distance/100) * time.Second
-		// Move towards the target coordinates and stop roughly at 3 quarters of the way
-		robotgo.MoveSmooth(x1, y1, s, v)
-	} else {
-		x1 = x
-		y1 = y
-		// moveTime = 0
-	}
-	coin := getRandInt(0, 1) == 0
-	if !coin {
-		steps := getRandInt(5, 10)
-		pseudoCircularMovement(x1, y1, steps, s, v)
-	}
-	robotgo.MoveSmooth(x, y, s, v)
-	return nil
-}
-
 func pseudoCircularMovement(x, y, steps int, s, v float64) {
 	r := float64(getRandInt(16, 50))   // radius between 16 and 66
 	p := getRandInt(5, 50)             // micro-pauses between steps
@@ -259,19 +223,56 @@ func pseudoCircularMovement(x, y, steps int, s, v float64) {
 	robotgo.MoveSmooth(startX, startY, s, v)
 }
 
-// TypeStr types the specified string simulating a human-like typing
+// Introducing small jittery movements during mouse movement
+func MouseMove(x, y int) error {
+	currentX, currentY := robotgo.Location()
+	s := getRandFloat(0.5, 1.5) // speed
+	v := getRandFloat(0.5, 1.5) // end velocity
+	fmt.Printf("Moving mouse to %d, %d with speed %f and end velocity %f\n", x, y, s, v)
+
+	moveToWithJitter(currentX, currentY, x, y, s, v)
+	return nil
+}
+
+func moveToWithJitter(startX, startY, endX, endY int, speed, velocity float64) {
+	steps := 10
+	for i := 0; i < steps; i++ {
+		t := float64(i) / float64(steps)
+		curX := int(float64(startX) + t*float64(endX-startX))
+		curY := int(float64(startY) + t*float64(endY-startY))
+		curX += getRandInt(-2, 2) // adding jitter
+		curY += getRandInt(-2, 2) // adding jitter
+		robotgo.MoveSmooth(curX, curY, speed, velocity)
+		time.Sleep(time.Duration(getRandInt(10, 50)) * time.Millisecond)
+	}
+	if getRandInt(0, 1) > 0 {
+		pseudoCircularMovement(endX, endY, 10, speed, velocity)
+	}
+	robotgo.MoveSmooth(endX, endY, speed, velocity)
+}
+
+// Enhanced typing function to simulate human-like behavior with errors and corrections
 func TypeStr(str string) error {
 	for _, c := range str {
-		// Simulate human-like typing speed
-		time.Sleep(4 + time.Duration(getRandInt(0, 700))*time.Millisecond)
+		if getRandInt(0, 100) < 5 { // 5% chance to simulate a typo
+			typo := getRandInt(0, len(str)-1)
+			robotgo.TypeStr(string(str[typo]))
+			time.Sleep(time.Duration(getRandInt(100, 300)) * time.Millisecond) // simulate pause for correction
+			err := robotgo.KeyTap("Backspace")
+			if err != nil {
+				return err
+			}
+		}
+
 		robotgo.TypeStr(string(c))
+		time.Sleep(time.Duration(getRandInt(50, 300)) * time.Millisecond) // variable typing speed
 	}
 	return nil
 }
 
+// Existing utility functions for randomness
 func getRandInt(min, max int) int {
 	rangeInt := big.NewInt(int64(max - min + 1))
-	// Generate a random number in [0, rangeInt)
 	n, err := rand.Int(rand.Reader, rangeInt)
 	if err != nil {
 		return 0
@@ -282,7 +283,6 @@ func getRandInt(min, max int) int {
 
 func getRandFloat(min, max float64) float64 {
 	rangeInt := big.NewInt(int64((max * 100) - (min * 100) + 1))
-	// Generate a random number in [0, rangeInt)
 	n, err := rand.Int(rand.Reader, rangeInt)
 	if err != nil {
 		return 0
