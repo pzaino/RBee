@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This command is a simple automation server that listens for commands to move the mouse and click or perform keyboard actions.
+// This command is a simple automation server that listens for commands to move the mouse and click or perform keyboard actions simulating a human user.
 package main
 
 import (
