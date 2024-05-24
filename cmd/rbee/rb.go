@@ -42,15 +42,15 @@ func main() {
 	srvPort := flag.String("port", "3000", "port on where to listen for commands")
 	srvHost := flag.String("host", "localhost", "host on where to listen for commands")
 	sslMode := flag.String("sslmode", "disable", "enable or disable SSL")
-	certFile := flag.String("certfile", "", "path to the SSL certificate file")
+	crtFile := flag.String("certfile", "", "path to the SSL certificate file")
 	keyFile := flag.String("keyfile", "", "path to the SSL key file")
 	rateLmt := flag.String("ratelimit", "10,10", "rate limit in requests per second and burst limit")
 	flag.Parse()
 
 	host := *srvHost
 	port := *srvPort
-	ssl := *sslMode
-	cert := *certFile
+	fSSL := *sslMode
+	cert := *crtFile
 	key := *keyFile
 	rtLmt := *rateLmt
 
@@ -105,7 +105,7 @@ func main() {
 
 	// Start the server
 	log.Printf("Starting server on port %s", port)
-	if strings.ToLower(strings.TrimSpace(ssl)) == "enable" {
+	if strings.ToLower(strings.TrimSpace(fSSL)) == "enable" {
 		log.Fatal(srv.ListenAndServeTLS(cert, key))
 	} else {
 		log.Fatal(srv.ListenAndServe())
