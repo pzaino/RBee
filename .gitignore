@@ -22,3 +22,8 @@ go.work
 
 # Build artefacts
 bin/
+
+# IDEs
+**/.idea/
+**/.vscode/
+**/.vs/
