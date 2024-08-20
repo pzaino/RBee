@@ -51,3 +51,9 @@ jobs:
           objects.githubusercontent.com:443
           proxy.golang.org:443
           storage.googleapis.com:443
+          archive.ubuntu.com:80
+          azure.archive.ubuntu.com:80
+          esm.ubuntu.com:443
+          security.ubuntu.com:443
+          packages.microsoft.com:443
+          motd.ubuntu.com:443
