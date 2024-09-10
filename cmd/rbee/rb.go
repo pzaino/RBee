@@ -175,6 +175,9 @@ func executeCommand(cmd Command) error {
 	case "click":
 		robotgo.Click()
 		return nil
+	case "right_click":
+		robotgo.Click("right")
+		return nil
 	case "type":
 		return TypeStr(cmd.Value)
 	case "keyTap":
