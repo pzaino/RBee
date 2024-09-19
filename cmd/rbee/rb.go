@@ -107,9 +107,8 @@ func main() {
 	log.Printf("Starting server on port %s", port)
 	if strings.ToLower(strings.TrimSpace(fSSL)) == "enable" {
 		log.Fatal(srv.ListenAndServeTLS(cert, key))
-	} else {
-		log.Fatal(srv.ListenAndServe())
 	}
+	log.Fatal(srv.ListenAndServe())
 }
 
 func initAPIv1() {
