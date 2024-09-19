@@ -226,7 +226,7 @@ func pseudoCircularMovement(x, y, steps int, s, v float64) {
 	robotgo.MoveSmooth(startX, startY, s, v)
 }
 
-// Introducing small jittery movements during mouse movement
+// MouseMove introduces small jittery movements during mouse movement
 func MouseMove(x, y int) error {
 	currentX, currentY := robotgo.Location()
 	s := getRandFloat(0.5, 1.5) // speed
@@ -254,7 +254,7 @@ func moveToWithJitter(startX, startY, endX, endY int, speed, velocity float64) {
 	robotgo.MoveSmooth(endX, endY, speed, velocity)
 }
 
-// Enhanced typing function to simulate human-like behavior with errors and corrections
+// TypeStr provides enhanced typing function to simulate human-like behavior with errors and corrections
 func TypeStr(str string) error {
 	for _, c := range str {
 		if getRandInt(0, 100) < 5 { // 5% chance to simulate a typo
