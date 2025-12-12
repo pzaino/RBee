@@ -1,6 +1,6 @@
 module gotests/RBee
 
-go 1.23.12
+go 1.24.11
 
 require (
 	github.com/go-vgo/robotgo v0.110.8
