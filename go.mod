@@ -1,6 +1,6 @@
 module gotests/RBee
 
-go 1.24.11
+go 1.25.0
 
 require (
 	github.com/go-vgo/robotgo v0.110.8
@@ -32,6 +32,6 @@ require (
 	github.com/vcaesar/tt v0.20.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/exp v0.0.0-20250808145144-a408d31f581a // indirect
-	golang.org/x/image v0.30.0 // indirect
+	golang.org/x/image v0.38.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 )
